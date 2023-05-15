@@ -101,7 +101,7 @@ export class MyClass implements IRoutableComponent {
     }
 
     toggleEventListenersForCodeGroups(operation: "Add" | "Remove") {
-        // Remove all event listeners
+        // Add or remove event listeners for each code group
         for (const [key, groups] of Object.entries(this.codeGroupMap)) {
             for (const element of groups) {
                 if (operation === "Add") {
@@ -136,7 +136,7 @@ Reusing the same view model will require the additional configuration
 const codeTabList = Array.from(document.querySelectorAll('[data-group]'));
 
 // Group all elements with the same data-group attribute value
-this.codeGroupMap = codeTabList.reduce((map, element: HTMLElement) => {
+this.codeGroupMap = codeTabList.reduce((map, element) => {
     const codeGroup = element.getAttribute('data-group');
     (map[codeGroup] ??= []).push(element);
     return map;
@@ -146,7 +146,7 @@ this.codeGroupMap = codeTabList.reduce((map, element: HTMLElement) => {
 Object.entries(codeGroupMap).forEach(([key, groups]) => {
 
     // Loop through each element in the current code group
-    groups.forEach((element: HTMLDivElement) => {
+    groups.forEach((element) => {
         element.addEventListener('click', () => {
             // Remove active class from all elements in the same group
             groups.forEach(tab => tab.classList.remove('active'));
@@ -156,14 +156,14 @@ Object.entries(codeGroupMap).forEach(([key, groups]) => {
 
             // Hide all elements in the same group
             const codeCollectionGroup = document.querySelectorAll(`[data-code-group="${key}"]`)
-            codeCollectionGroup.forEach((codeBlock: HTMLElement) => {
+            codeCollectionGroup.forEach((codeBlock) => {
                 codeBlock.style.display = 'none';
                 codeBlock.classList.remove('active');
             });
 
             // Show the related data-group-code element
             const targetTabIndex = element.dataset.codeIndex;
-            const targetCodeBlockElement = codeCollectionGroup[targetTabIndex] as HTMLElement;
+            const targetCodeBlockElement = codeCollectionGroup[targetTabIndex];
             targetCodeBlockElement.style.display = 'block';
             targetCodeBlockElement.classList.add('active');
         });
