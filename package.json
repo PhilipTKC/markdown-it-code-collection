@@ -14,5 +14,5 @@
     "clean": "rimraf ./dist",
     "build": "npm run clean && tsc"
   },
-  "main": "dist/index.min.js"
+  "main": "dist/index.js"
 }

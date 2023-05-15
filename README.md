@@ -66,7 +66,6 @@ export class MyClass implements IRoutableComponent {
             // Add active class to the clicked element
             element.classList.toggle('active');
 
-
             // Hide all elements in the same group
             const codeCollectionGroup = this.element.querySelectorAll(`[data-code-group="${key}"]`)
             codeCollectionGroup.forEach((codeBlock: HTMLElement) => {
