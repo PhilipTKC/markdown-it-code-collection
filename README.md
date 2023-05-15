@@ -2,7 +2,9 @@
 
 ## Description
 
-Creates tabbed code blocks. Requires extra JS & CSS.
+Creates tabbed code blocks. The plugin will group all code blocks with the same group name and create a tabbed interface to switch between them.
+
+This was created for [Quick-Start](https://github.com/PhilipTKC/quick-start)
 
 ## Work in Progress
 
@@ -10,7 +12,7 @@ Creates tabbed code blocks. Requires extra JS & CSS.
 - [ ] Add option to allow changing 'active' class name for both the tab and code block
 - [ ] Tests
 
-## Usage
+### Usage (Syntax)
 
     {{ group="group1" tabs=["Typescript", "Javascript"] }}
 
@@ -40,53 +42,130 @@ Creates tabbed code blocks. Requires extra JS & CSS.
 
     {{ /group }}
 
-
-## JS
+### Usage (Aurelia)
 
 ```js
-// Find all elements with the data-group attribute
-const codeTabList = document.querySelectorAll('[data-group]');
-const codeGroupMap = {} as { [key: string]: HTMLElement[] };
 
-// Group all elements with the same data-group attribute value
-codeTabList.forEach((element: HTMLElement) => {
-    const codeGroup = element.getAttribute('data-group');
+interface GroupedHTMLElements {
+    [key: string]: HTMLElement[];
+}
 
-    if (!codeGroupMap[codeGroup]) {
-        codeGroupMap[codeGroup] = [];
-    }
 
-    codeGroupMap[codeGroup].push(element);
-});
+@inject(Element)
+export class MyClass implements IRoutableComponent {
+    private handleTabClick: (groups: HTMLElement[], element: HTMLElement, key: string) => void;
 
-// Add click event listener to each element in the same group
-Object.keys(codeGroupMap).forEach((key) => {
-    const groups = codeGroupMap[key];
+    private codeGroupMap: GroupedHTMLElements;
 
-    groups.forEach((element: HTMLDivElement) => {
-        element.addEventListener('click', () => {
+    constructor(private readonly element: Element) {
+        this.handleTabClick = (groups, element, key) => {
+            
             // Remove active class from all elements in the same group
-            groups.forEach(link => {
-                link.classList.remove('active');
-            });
+            groups.forEach(tab => tab.classList.remove('active'));
 
             // Add active class to the clicked element
             element.classList.toggle('active');
 
-            // Find the related data-group-code element
-            const codeGroup = document.querySelectorAll(`[data-code-group="${key}"]`);
 
             // Hide all elements in the same group
-            codeGroup.forEach((code: HTMLElement) => {
-                code.classList.remove('active');
-                code.style.display = 'none';
+            const codeCollectionGroup = this.element.querySelectorAll(`[data-code-group="${key}"]`)
+            codeCollectionGroup.forEach((codeBlock: HTMLElement) => {
+                codeBlock.style.display = 'none';
+                codeBlock.classList.remove('active');
             });
 
             // Show the related data-group-code element
             const targetTabIndex = element.dataset.codeIndex;
-            const targetCodeElement = document.querySelectorAll(`[data-code-group="${key}"]`)[targetTabIndex];
-            targetCodeElement.classList.add('active');
-            targetCodeElement.style.display = 'block';
+            const targetCodeBlockElement = codeCollectionGroup[targetTabIndex] as HTMLElement;
+            targetCodeBlockElement.style.display = 'block';
+            targetCodeBlockElement.classList.add('active');
+        }
+    }
+
+    attached() {
+        // Find all elements with the data-group attribute
+        const codeTabList = Array.from(this.element.querySelectorAll('[data-group]'));
+
+        // Group all elements with the same data-group attribute value
+        this.codeGroupMap = codeTabList.reduce((map, element: HTMLElement) => {
+            const codeGroup = element.getAttribute('data-group');
+            (map[codeGroup] ??= []).push(element);
+            return map;
+        }, {});
+
+        this.toggleEventListenersForCodeGroups("Add");
+    }
+
+    detaching() {
+        this.toggleEventListenersForCodeGroups("Remove");
+    }
+
+    toggleEventListenersForCodeGroups(operation: "Add" | "Remove") {
+        // Remove all event listeners
+        for (const [key, groups] of Object.entries(this.codeGroupMap)) {
+            for (const element of groups) {
+                if (operation === "Add") {
+                    element.addEventListener('click', () => this.handleTabClick(groups, element, key));
+                }
+
+                if (operation === "Remove") {
+                    element.removeEventListener('click', () => this.handleTabClick(groups, element, key));
+                }
+            }
+        }
+    }
+}
+```
+
+Reusing the same view model will require the additional configuration
+
+```js
+.register(
+    RouterConfiguration.customize({
+        ...
+        swapOrder: 'detach-current-attach-next',
+    }),
+```
+
+### Usage (Typical)
+
+## Javascript
+
+```js
+// Find all elements with the data-group attribute
+const codeTabList = Array.from(document.querySelectorAll('[data-group]'));
+
+// Group all elements with the same data-group attribute value
+this.codeGroupMap = codeTabList.reduce((map, element: HTMLElement) => {
+    const codeGroup = element.getAttribute('data-group');
+    (map[codeGroup] ??= []).push(element);
+    return map;
+}, {});
+
+// Loop through each code group key in the map
+Object.entries(codeGroupMap).forEach(([key, groups]) => {
+
+    // Loop through each element in the current code group
+    groups.forEach((element: HTMLDivElement) => {
+        element.addEventListener('click', () => {
+            // Remove active class from all elements in the same group
+            groups.forEach(tab => tab.classList.remove('active'));
+
+            // Add active class to the clicked element
+            element.classList.toggle('active');
+
+            // Hide all elements in the same group
+            const codeCollectionGroup = document.querySelectorAll(`[data-code-group="${key}"]`)
+            codeCollectionGroup.forEach((codeBlock: HTMLElement) => {
+                codeBlock.style.display = 'none';
+                codeBlock.classList.remove('active');
+            });
+
+            // Show the related data-group-code element
+            const targetTabIndex = element.dataset.codeIndex;
+            const targetCodeBlockElement = codeCollectionGroup[targetTabIndex] as HTMLElement;
+            targetCodeBlockElement.style.display = 'block';
+            targetCodeBlockElement.classList.add('active');
         });
     });
 });

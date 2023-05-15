@@ -79,6 +79,7 @@ const codeCollectionPlugin = (md) => {
         const token = tokens[idx];
         const groupMatch = token.info.match(/group="(.*?)"/);
         const group = groupMatch[1].toLowerCase().replace(" ", "-");
+        // Required to add the 'active' class to the first code block in the group
         if (currentGroup !== "" && group !== currentGroup) {
             isNewGroup = true;
         }
