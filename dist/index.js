@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.codeCollectionPlugin = void 0;
 const pluginDefaults = {
     activeTab: "tab-active",
     activeCode: "code-active"
@@ -99,4 +100,4 @@ const codeCollectionPlugin = (md, pluginOpts = pluginDefaults) => {
         return `<div class="code-block ${group}-${tab}${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
     };
 };
-exports.default = codeCollectionPlugin;
+exports.codeCollectionPlugin = codeCollectionPlugin;

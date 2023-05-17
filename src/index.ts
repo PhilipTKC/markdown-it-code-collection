@@ -3,17 +3,17 @@ import Renderer from 'markdown-it/lib/renderer';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
 
-export interface PluginOptions {
+export interface CodeColPluginOpts {
     activeTab?: string;
     activeCode?: string;
 }
 
-const pluginDefaults: PluginOptions = {
+const pluginDefaults: CodeColPluginOpts = {
     activeTab: "tab-active",
     activeCode: "code-active"
 }
 
-const codeCollectionPlugin: PluginWithOptions<PluginOptions> = (md: MarkdownIt, pluginOpts: PluginOptions = pluginDefaults) => {
+export const codeCollectionPlugin: PluginWithOptions<CodeColPluginOpts> = (md: MarkdownIt, pluginOpts: CodeColPluginOpts = pluginDefaults) => {
 
     const OPEN_REGEX = /{{\s*group="(?<groupname>[^"]+)"\s+tabs=\[(?<tabs>[^\]]+)\]\s*}}/;
     const CLOSE_REGEX = /^{{\s+\/group\s+}}$/;
@@ -135,4 +135,3 @@ const codeCollectionPlugin: PluginWithOptions<PluginOptions> = (md: MarkdownIt, 
         return `<div class="code-block ${group}-${tab}${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
     };
 }
-export default codeCollectionPlugin;
