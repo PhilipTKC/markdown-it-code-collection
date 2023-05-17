@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const codeCollectionPlugin = (md) => {
+const pluginDefaults = {
+    activeTab: "tab-active",
+    activeCode: "code-active"
+};
+const codeCollectionPlugin = (md, pluginOpts = pluginDefaults) => {
     const OPEN_REGEX = /{{\s*group="(?<groupname>[^"]+)"\s+tabs=\[(?<tabs>[^\]]+)\]\s*}}/;
     const CLOSE_REGEX = /^{{\s+\/group\s+}}$/;
     md.core.ruler.push('code_collection', (state) => {
@@ -24,7 +28,7 @@ const codeCollectionPlugin = (md) => {
                 const group = match[1];
                 const tabs = match[2].split(',').map(tab => tab.trim().replace(/\'/g, ""));
                 const tabList = tabs.map((tab, index) => {
-                    const isActive = index === 0 ? 'active' : '';
+                    const isActive = index === 0 ? pluginDefaults.activeTab : '';
                     return `<li class="code-tab ${isActive}" data-group="${group}" data-code-index="${index}">${tab.trim()}</li>`;
                 }).join('');
                 const customNavToken = new state.Token('code_collection', '', 0);
@@ -92,7 +96,7 @@ const codeCollectionPlugin = (md) => {
         const tabMatch = token.info.match(/tab="(.*?)"/);
         const tab = tabMatch[1].toLowerCase().replace(" ", "-");
         currentGroup = group;
-        return `<div class="code-block ${group}-${tab}${isNewGroup ? ' active' : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
+        return `<div class="code-block ${group}-${tab}${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
     };
 };
 exports.default = codeCollectionPlugin;

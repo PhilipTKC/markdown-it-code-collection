@@ -9,7 +9,7 @@ This was created for [Quick-Start](https://github.com/PhilipTKC/quick-start)
 ## Work in Progress
 
 - [ ] Add option to allow prefixing of group syntax
-- [ ] Add option to allow changing 'active' class name for both the tab and code block
+- [x] Add option to allow changing 'active' class name for both the tab and code block
 - [ ] Tests
 
 ### Usage (Syntax)
