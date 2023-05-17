@@ -97,7 +97,7 @@ const codeCollectionPlugin = (md, pluginOpts = pluginDefaults) => {
         const tabMatch = token.info.match(/tab="(.*?)"/);
         const tab = tabMatch[1].toLowerCase().replace(" ", "-");
         currentGroup = group;
-        return `<div class="code-block ${group}-${tab}${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
+        return `<div class="code-block ${group}-${tab} ${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
     };
 };
 exports.codeCollectionPlugin = codeCollectionPlugin;

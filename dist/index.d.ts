@@ -1,6 +1,6 @@
 import { PluginWithOptions } from 'markdown-it';
-export interface CodeColPluginOpts {
+export interface CodeCollectionPluginOpts {
     activeTab?: string;
     activeCode?: string;
 }
-export declare const codeCollectionPlugin: PluginWithOptions<CodeColPluginOpts>;
+export declare const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts>;
