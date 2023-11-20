@@ -27,7 +27,7 @@ const codeCollectionPlugin = (md, pluginOpts = pluginDefaults) => {
                 * match[2] = tabs ['tab1', 'tab2', 'tab3']
                 */
                 const group = match[1];
-                const tabs = match[2].split(',').map(tab => tab.trim().replace(/\'/g, ""));
+                const tabs = match[2].split(',').map(tab => tab.trim().replace(/\"/g, ""));
                 const tabList = tabs.map((tab, index) => {
                     const isActive = index === 0 ? pluginDefaults.activeTab : '';
                     return `<li class="code-tab ${isActive}" data-group="${group}" data-code-index="${index}">${tab.trim()}</li>`;
