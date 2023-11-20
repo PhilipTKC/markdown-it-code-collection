@@ -43,7 +43,7 @@ export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> =
 
                 const tabList = tabs.map((tab: string, index: number) => {
                     const isActive = index === 0 ? pluginDefaults.activeTab : '';
-                    return `<li class="code-tab ${isActive}" data-group="${group}" data-code-index="${index}">${tab.trim()}</li>`;
+                    return `<li class="code-tab ${isActive}" data-group="${group}" data-code-index="${index}">${tab.replace(/"([^"]*)"/g, '$1').trim()}</li>`;
                 }).join('');
 
                 const customNavToken = new state.Token('code_collection', '', 0);
