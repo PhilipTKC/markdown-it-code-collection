@@ -14,7 +14,7 @@ const pluginDefaults: CodeCollectionPluginOpts = {
 }
 
 export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> = (md: MarkdownIt, pluginOpts: CodeCollectionPluginOpts = pluginDefaults) => {
-    const OPEN_REGEX = /{{\s*group=(["'])(?<groupname>.*?)\1\s+tabs=\[(?<tabs>[^\]]+)\]\s*}}/;
+    const OPEN_REGEX = /{{\s*group="(?<groupname>[^"]+)"\s+tabs=\[(?<tabs>[^\]]+)\]\s*}}/;
     const CLOSE_REGEX = /^{{\s+\/group\s+}}$/;
 
     md.core.ruler.push('code_collection', (state: StateCore) => {
@@ -39,7 +39,7 @@ export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> =
                 * match[2] = tabs ['tab1', 'tab2', 'tab3']
                 */
                 const group = match[1];
-                const tabs = match[2].split(',').map(tab => tab.trim().replace(/\'/g, ""));
+                const tabs = match[2].split(',').map(tab => tab.trim().replace(/\"/g, ""));
 
                 const tabList = tabs.map((tab: string, index: number) => {
                     const isActive = index === 0 ? pluginDefaults.activeTab : '';
