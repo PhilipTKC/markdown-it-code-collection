@@ -14,7 +14,6 @@ const pluginDefaults: CodeCollectionPluginOpts = {
 }
 
 export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> = (md: MarkdownIt, pluginOpts: CodeCollectionPluginOpts = pluginDefaults) => {
-
     const OPEN_REGEX = /{{\s*group="(?<groupname>[^"]+)"\s+tabs=\[(?<tabs>[^\]]+)\]\s*}}/;
     const CLOSE_REGEX = /^{{\s+\/group\s+}}$/;
 
@@ -111,27 +110,34 @@ export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> =
     let isNewGroup = false;
 
     md.renderer.rules.fence = (tokens: Token[], idx: number, options: MarkdownIt.Options, env: any, self: Renderer) => {
+
         const token = tokens[idx];
 
         const groupMatch = token.info.match(/group="(.*?)"/);
-        const group = groupMatch[1].toLowerCase().replace(" ", "-");
-
-        // Required to add the 'active' class to the first code block in the group
-        if (currentGroup !== "" && group !== currentGroup) {
-            isNewGroup = true;
-        } else {
-            isNewGroup = false;
-        }
-
-        if (currentGroup === "" && group !== currentGroup) {
-            isNewGroup = true;
-        }
-
         const tabMatch = token.info.match(/tab="(.*?)"/);
-        const tab = tabMatch[1].toLowerCase().replace(" ", "-");
 
-        currentGroup = group;
+        if (groupMatch && tabMatch) {
+            const group = groupMatch[1].toLowerCase().replace(" ", "-");
+            const tab = tabMatch[1].toLowerCase().replace(" ", "-");
 
-        return `<div class="code-block ${group}-${tab} ${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
+            // Required to add the 'active' class to the first code block in the group
+            if (currentGroup !== "" && group !== currentGroup) {
+                isNewGroup = true;
+            } else {
+                isNewGroup = false;
+            }
+
+            if (currentGroup === "" && group !== currentGroup) {
+                isNewGroup = true;
+            }
+
+            currentGroup = group;
+
+            // Render Code Block with Group and Tab
+            return `<div class="code-block ${group}-${tab} ${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
+        } else {
+            // Render Default Code Block
+            return defaultRenderFence(tokens, idx, options, env, self);
+        }
     };
 }
