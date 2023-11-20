@@ -14,7 +14,7 @@ const pluginDefaults: CodeCollectionPluginOpts = {
 }
 
 export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> = (md: MarkdownIt, pluginOpts: CodeCollectionPluginOpts = pluginDefaults) => {
-    const OPEN_REGEX = /{{\s*group=(?<groupname>[^"]+)\s+tabs=\[(?<tabs>[^\]]+)\]\s*}}/;
+    const OPEN_REGEX = /{{\s*group=(["'])(?<groupname>.*?)\1\s+tabs=\[(?<tabs>[^\]]+)\]\s*}}/;
     const CLOSE_REGEX = /^{{\s+\/group\s+}}$/;
 
     md.core.ruler.push('code_collection', (state: StateCore) => {
