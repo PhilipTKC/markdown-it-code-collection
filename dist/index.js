@@ -3,7 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.codeCollectionPlugin = void 0;
 const pluginDefaults = {
     activeTab: "tab-active",
-    activeCode: "code-active"
+    activeCode: "code-active",
+    copyTag: "i",
+    copyIcon: "fa-solid fa-copy",
+    copyCSSName: "code-block-copy"
 };
 const codeCollectionPlugin = (md, pluginOpts = pluginDefaults) => {
     const OPEN_REGEX = /{{\s*group="(?<groupname>[^"]+)"\s+tabs=\[(?<tabs>[^\]]+)\]\s*}}/;
@@ -82,6 +85,7 @@ const codeCollectionPlugin = (md, pluginOpts = pluginDefaults) => {
     let isNewGroup = false;
     md.renderer.rules.fence = (tokens, idx, options, env, self) => {
         const token = tokens[idx];
+        const copyElement = `<${pluginDefaults.copyTag} class="${pluginDefaults.copyIcon} ${pluginDefaults.copyCSSName}" onclick="copyCode('code-${idx}')"></${pluginDefaults.copyTag}>`;
         const groupMatch = token.info.match(/group="(.*?)"/);
         const tabMatch = token.info.match(/tab="(.*?)"/);
         if (groupMatch && tabMatch) {
@@ -99,11 +103,20 @@ const codeCollectionPlugin = (md, pluginOpts = pluginDefaults) => {
             }
             currentGroup = group;
             // Render Code Block with Group and Tab
-            return `<div class="code-block ${group}-${tab} ${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
+            return `
+            <div class="code-block ${group}-${tab} ${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}" data-code-id="code-${idx}">
+                ${copyElement}
+                ${defaultRenderFence(tokens, idx, options, env, self)}
+            </div>\n`;
         }
         else {
             // Render Default Code Block
-            return defaultRenderFence(tokens, idx, options, env, self);
+            return `
+            <div data-code-id="code-${idx}" style="position: relative">
+                ${copyElement}
+                ${defaultRenderFence(tokens, idx, options, env, self)}
+            </div>\n
+            `;
         }
     };
 };

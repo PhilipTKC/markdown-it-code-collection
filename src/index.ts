@@ -6,11 +6,17 @@ import Token from 'markdown-it/lib/token';
 export interface CodeCollectionPluginOpts {
     activeTab?: string;
     activeCode?: string;
+    copyTag?: string;
+    copyIcon?: string;
+    copyCSSName?: string;
 }
 
 const pluginDefaults: CodeCollectionPluginOpts = {
     activeTab: "tab-active",
-    activeCode: "code-active"
+    activeCode: "code-active",
+    copyTag: "i",
+    copyIcon: "fa-solid fa-copy",
+    copyCSSName: "code-block-copy"
 }
 
 export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> = (md: MarkdownIt, pluginOpts: CodeCollectionPluginOpts = pluginDefaults) => {
@@ -113,6 +119,8 @@ export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> =
 
         const token = tokens[idx];
 
+        const copyElement = `<${pluginDefaults.copyTag} class="${pluginDefaults.copyIcon} ${pluginDefaults.copyCSSName}" onclick="copyCode('code-${idx}')"></${pluginDefaults.copyTag}>`
+
         const groupMatch = token.info.match(/group="(.*?)"/);
         const tabMatch = token.info.match(/tab="(.*?)"/);
 
@@ -134,10 +142,19 @@ export const codeCollectionPlugin: PluginWithOptions<CodeCollectionPluginOpts> =
             currentGroup = group;
 
             // Render Code Block with Group and Tab
-            return `<div class="code-block ${group}-${tab} ${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}">${defaultRenderFence(tokens, idx, options, env, self)}</div>\n`;
+            return `
+            <div class="code-block ${group}-${tab} ${isNewGroup ? pluginDefaults.activeCode : ''}" data-code-group="${group}" data-code-id="code-${idx}">
+                ${copyElement}
+                ${defaultRenderFence(tokens, idx, options, env, self)}
+            </div>\n`;
         } else {
             // Render Default Code Block
-            return defaultRenderFence(tokens, idx, options, env, self);
+            return `
+            <div data-code-id="code-${idx}" style="position: relative">
+                ${copyElement}
+                ${defaultRenderFence(tokens, idx, options, env, self)}
+            </div>\n
+            `
         }
     };
 }

@@ -1,12 +1,31 @@
 # Markdown It Code Collection Plugin
 
-## Plugin no longer required.
-
 ## Description
 
 Creates tabbed code blocks. The plugin will group all code blocks with the same group name and create a tabbed interface to switch between them.
 
 This was created for [Quick-Start](https://github.com/PhilipTKC/quick-start)
+
+### Plugin Options Defaults
+
+```ts
+const pluginDefaults: CodeCollectionPluginOpts = {
+    activeTab: "tab-active",
+    activeCode: "code-active",
+    copyTag: "i",
+    copyIcon: "fa-solid fa-copy",
+    copyCSSName: "code-block-copy"
+}
+```
+
+```ts
+import { codeCollectionPlugin, CodeCollectionPluginOpts } from "markdown-it-code-collection";
+
+.use<CodeCollectionPluginOpts>(codeCollectionPlugin, {
+    activeTab: "tab-active",
+    ...
+})
+```
 
 ### Usage (Syntax)
 
@@ -112,16 +131,6 @@ export class MyClass implements IRoutableComponent {
 }
 ```
 
-Reusing the same view model will require the additional configuration
-
-```js
-.register(
-    RouterConfiguration.customize({
-        ...
-        swapOrder: 'detach-current-attach-next',
-    }),
-```
-
 ### Usage (Typical)
 
 ## Javascript
@@ -166,6 +175,30 @@ Object.entries(codeGroupMap).forEach(([key, groups]) => {
 });
 ```
 
+### CopyCode
+
+```ts
+export function copyCode(codeId: string) {
+  const codeBlock = document.querySelector(`[data-code-id="${codeId}"]`);
+
+  const code = codeBlock.querySelector("code").textContent;
+
+  navigator.clipboard.writeText(code);
+}
+
+window.copyCode = copyCode;
+```
+
+Reusing the same view model will require the additional configuration
+
+```js
+.register(
+    RouterConfiguration.customize({
+        ...
+        swapOrder: 'detach-current-attach-next',
+    }),
+```
+
 ## CSS
 
 ```css
@@ -195,8 +228,17 @@ Object.entries(codeGroupMap).forEach(([key, groups]) => {
 }
 
 .code-block {
-    display: flex;
+    display: block;
     font-size: 0.875rem;
     line-height: 1.25rem;
+    position: relative;
+}
+
+.code-block-copy {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    cursor: pointer;
 }
 ```
