@@ -1,10 +1,10 @@
 # Markdown It Code Collection Plugin
 
+Plugin created for [Quick-Start](https://github.com/PhilipTKC/quick-start)
+
 ## Description
 
 Creates tabbed code blocks. The plugin will group all code blocks with the same group name and create a tabbed interface to switch between them.
-
-This was created for [Quick-Start](https://github.com/PhilipTKC/quick-start)
 
 ### Plugin Options Defaults
 
